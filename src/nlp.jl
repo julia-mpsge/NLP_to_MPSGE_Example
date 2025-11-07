@@ -4,6 +4,37 @@
 Creates a JuMP model representing the NLP economic model based on the provided `ModelData`.
 
 The numeraire is `PQ`, the consumer price index, which is fixed to 1.
+
+# Parameters
+
+- `sigma`: Elasticity of substitution
+- `omega`: Elasticity of transformation
+- `BBAR`: Balance of payments
+- `PWE`: World export price
+- `PWM`: World import price
+- `TM`: Import tax rate
+- `TE`: Export subsidy rate
+- `TD`: Domestic tax rate
+
+
+# Variables
+
+- `DD`: Domestic Demand
+- `DS`: Domestic Supply
+- `M`: Imports
+- `E`: Exports
+- `X`: Compound good (production)
+- `Y`: PNB
+- `PX`: Producer price index
+- `PQ`: Consumer price index
+- `PED`: Export price including subsidy
+- `PMD`: Import price including duties
+- `PDT`: Domestic Price including taxes
+- `PDD`: Domestic Price excluding taxes
+- `PFX`: Nominal exchange rate
+- `Q`: Consumption of the compound good
+- `GR`: Government Revenue
+
 """
 function NLP_model(data::ModelData)
 

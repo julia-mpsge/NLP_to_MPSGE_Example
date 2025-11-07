@@ -166,28 +166,24 @@ set_silent(mpsge)
 #   2. Loop through each shock, set the parameters, solve the models,
 #      generate the reports, and append them to the results DataFrames.
 #
-# However, this requires the DataFrame be empty at the start of each loop. I tend
-# to forget to re-run the initialization step, so to avoid this I wrap the entire
-# process in a `begin ... end` block. This way, I can re-run the entire block
-# without worrying about the initialization step.
+# However, this requires the DataFrame be empty at the start of each loop. 
 
-begin
-    nlp_results = DataFrame();
-    mpsge_results = DataFrame();
-    for shock in shocks
-        set_parameter_values(nlp, shock)
-        set_parameter_values(mpsge, shock)
-    
-        optimize!(nlp)
-        solve!(mpsge)
-    
-        nlp_report = report(nlp)
-        mpsge_report = report(mpsge)
-    
-        nlp_results = vcat(nlp_results, nlp_report)
-        mpsge_results = vcat(mpsge_results, mpsge_report)
-    end
+nlp_results = DataFrame();
+mpsge_results = DataFrame();
+for shock in shocks
+    set_parameter_values(nlp, shock)
+    set_parameter_values(mpsge, shock)
+
+    optimize!(nlp)
+    solve!(mpsge)
+
+    nlp_report = report(nlp)
+    mpsge_report = report(mpsge)
+
+    nlp_results = vcat(nlp_results, nlp_report)
+    mpsge_results = vcat(mpsge_results, mpsge_report)
 end
+
 
 # The table results can be viewed by simply typing the DataFrame name.
 nlp_results
@@ -203,4 +199,6 @@ round.(nlp_results .- mpsge_results, digits=6)
 # to switch to help mode and type `report`, or by using the `@doc` macro:
 
 @doc report
+
+## Part 4: Issues
 

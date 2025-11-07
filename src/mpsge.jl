@@ -3,6 +3,34 @@
 
 Creates an MPSGEModel based on the provided `ModelData`. The numeraire is `PQ`, 
 the consumer price index, which is fixed to 1.
+
+# Parameters
+
+- `sigma`: Elasticity of substitution
+- `omega`: Elasticity of transformation
+- `BBAR`: Balance of payments
+- `PWE`: World export price
+- `PWM`: World import price
+- `TM`: Import tax rate
+- `TE`: Export subsidy rate
+- `TD`: Domestic tax rate
+
+# Sectors
+
+- `X`: Production sector
+- `Q`: Consumption sector
+
+# Commodities
+
+- `PFX`: Nominal exchange rate
+- `PX`: Producer price index
+- `PQ`: Consumer price index
+- `PDD`: Domestic price excluding taxes
+
+# Consumers
+
+- `Y`: Representative Agent
+
 """
 function MPSGE_model(data::ModelData)
 
@@ -44,7 +72,6 @@ function MPSGE_model(data::ModelData)
     end)
 
     @consumers(MP, begin
-        #world
         Y
     end)
 
