@@ -1,4 +1,4 @@
-# # Comparing an NLP and MPSGE Implementation of the Same Model
+# # Comparing Models
 
 # This document will compare the solutions from [`NLP_model`](@ref) and [`MPSGE_model`](@ref).
 # They both describe the same economic model, but one is implemented in the 
@@ -7,9 +7,8 @@
 using NLP_to_MPSGE_Example
 using JuMP, MPSGE, DataFrames
 
-############################
-## Part 1: Initialization ##
-############################
+
+# ## Initialization
 
 # Initialize the data
 data = ModelData()
@@ -22,11 +21,8 @@ mpsge = MPSGE_model(data)
 optimize!(nlp)
 solve!(mpsge; cumulative_iteration_limit=0)
 
+# ## Comparing Solutions
 
-
-#################################
-## Part 2: Comparing Solutions ##
-#################################
 
 # The NLP version of the model has more variables the MPSGE version, however, the
 # solutions to both are the same. 
@@ -134,9 +130,7 @@ PED = value(mpsge[:PFX]*(1 + mpsge[:TE])*mpsge[:PWE])
 
 
 
-###############################
-## Part 3: Recreating Tables ##
-###############################
+# ## Recreating Results
 
 # In this part we will recreate tables `5.4` and `5.5` from the reference paper.
 # These tables are on pages 42 (45 of document) and 45 (48 of document). These tables
