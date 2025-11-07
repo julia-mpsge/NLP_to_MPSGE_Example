@@ -58,8 +58,8 @@ function MCP_model(data::ModelData; subexpressions = false)
     if subexpressions
 
         @variables(MCP, begin
-            revenue_X, (start = 1)
-            cost_X, (start = 1)
+            revenue_X>=0, (start = 1)
+            cost_X>=0, (start = 1)
         end)
 
         @constraint(MCP, Revenue_X,
@@ -92,8 +92,8 @@ function MCP_model(data::ModelData; subexpressions = false)
 
     if subexpressions 
         @variables(MCP, begin
-            revenue_Q, (start = 1)
-            cost_Q, (start = 1)
+            revenue_Q>=0, (start = 1)
+            cost_Q>=0, (start = 1)
         end)
         @constraint(MCP, Revenue_Q, 
             revenue_Q - PQ ⟂ revenue_Q

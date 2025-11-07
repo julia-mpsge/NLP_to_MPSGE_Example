@@ -48,31 +48,31 @@ function MPSGE_model(data::ModelData)
     MP = MPSGEModel()
 
     @parameters(MP, begin
-        sigma, .2
-        omega, .2
-        BBAR, 0.0
+        sigma, .2, (description = "Elasticity of Substitution in Goods Sector")
+        omega, .2, (description = "Elasticity of Transformation in Activity Sector")
+        BBAR, 0.0, (description = "Trade Imbalance")
 
-        PWE, PWE0
-        PWM, PWM0
-        TM, 0.0
-        TE, 0.0
-        TD, 0.0
+        PWE, 1, (description = "World Export Price Index")
+        PWM, 1, (description = "World Import Price Index")
+        TM, 0.0, (description = "Import Tariff Rate")
+        TE, 0.0, (description = "Export Subsidy Rate")
+        TD, 0.0, (description = "Domestic Tax Rate on Demand")
     end)
 
     @sectors(MP, begin
-        X
-        Q
+        X, (description = "Activity Sector")
+        Q, (description = "Goods Sector")
     end)
 
     @commodities(MP, begin
-        PFX
-        PX
-        PQ
-        PDD
+        PFX, (description = "Nominal Exchange Rate")
+        PX, (description = "Producer Price Index")
+        PQ, (description = "Consumer Price Index")
+        PDD, (description = "Domestic Good Price")
     end)
 
     @consumers(MP, begin
-        Y
+        Y, (description = "Representative Agent")
     end)
 
 
