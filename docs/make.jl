@@ -13,7 +13,7 @@ const _PAGES = [
 
 literate_files = Dict(
     "index" => ( 
-        input = "../main.jl",#src/Tutorials/robinson_crusoe/basic_rc.jl",
+        input = "../main.jl",
         output = "src/"
     ),
 )
@@ -34,7 +34,7 @@ makedocs(;
     authors="Mitch Phillipson",
     sitename="NLP_to_MPSGE_Example.jl",
     format=Documenter.HTML(;
-        canonical="https://julia-mpsge.github.io/MPSGE.jl",
+        canonical="https://github.com/julia-mpsge/NLP_to_MPSGE_Example",
         edit_link="main",
         assets=String[],
     ),
@@ -42,7 +42,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo = "github.com/julia-mpsge/MPSGE.jl",
+    repo = "github.com/julia-mpsge/NLP_to_MPSGE_Example",
     devbranch = "main",
     branch = "gh-pages",
     push_preview = true
