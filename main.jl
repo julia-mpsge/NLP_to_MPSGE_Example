@@ -27,8 +27,6 @@ solve!(mpsge; cumulative_iteration_limit=0)
 # The NLP version of the model has more variables the MPSGE version, however, the
 # solutions to both are the same. 
 
-## Question 1: How do we recover the missing information?
-
 
 # Set parameter values for a counterfactual
 params = ModelParameters(
