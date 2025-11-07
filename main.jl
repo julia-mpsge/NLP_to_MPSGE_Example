@@ -210,5 +210,5 @@ round.(nlp_results .- mpsge_results, digits=6)
 # What do the columns in the report mean? Check the doc string for `report`. You 
 # can do this either by entering the help mode in the REPL, just type `?` in the REPL
 # to switch to help mode and type `report`, or using the `@doc report`. Here is a 
-# link to the ['report'](@ref) documentation.
+# link to the [`report`](@ref) documentation.
 
