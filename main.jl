@@ -170,27 +170,29 @@ set_silent(mpsge)
 #   2. Loop through each shock, set the parameters, solve the models,
 #      generate the reports, and append them to the results DataFrames.
 #
-# However, this requires the DataFrame be empty at the start of each loop. 
+# However, this requires the DataFrame be empty at the start of each loop. To 
+# ensure this, we can use a `begin...end` block to create a code block. Note
+# that the `global` keyword in _not necessary_ locally. I am using `Documenter` 
+# to generate this document, and it requires the `global` keyword to modify
+# variables outside the block.
 
-nlp_results = DataFrame();
-mpsge_results = DataFrame();
-
-# Test break up
-
-for shock in shocks
-    set_parameter_values(nlp, shock)
-    set_parameter_values(mpsge, shock)
-
-    optimize!(nlp)
-    solve!(mpsge)
-
-    nlp_report = report(nlp)
-    mpsge_report = report(mpsge)
-
-    nlp_results = vcat(nlp_results, nlp_report)
-    mpsge_results = vcat(mpsge_results, mpsge_report)
+begin
+    global nlp_results = DataFrame();
+    global mpsge_results = DataFrame();
+    for shock in shocks
+        set_parameter_values(nlp, shock)
+        set_parameter_values(mpsge, shock)
+    
+        optimize!(nlp)
+        solve!(mpsge)
+    
+        nlp_report = report(nlp)
+        mpsge_report = report(mpsge)
+    
+        nlp_results = vcat(nlp_results, nlp_report)
+        mpsge_results = vcat(mpsge_results, mpsge_report)
+    end
 end
-
 
 # The table results can be viewed by simply typing the DataFrame name.
 nlp_results
