@@ -111,7 +111,7 @@ It may appear that we require new logic to define the consumer, but in reality w
    @final_demand(PQ, Q0)
    @endowment(PX, X0)
 end)
- ```
+```
 
 ### The "Final" Model
 
