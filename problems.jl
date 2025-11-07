@@ -23,8 +23,13 @@ mpsge = MPSGE_model(data)
 # and one without. This is going to demonstrate an issue with the PATHSolver
 # when subexpressions are used. 
 
-# Define a shock. Notice this is a fairly large shock, which is necessary to 
-# demonstrate the issue.
+
+# ## Demonstration of the Issue
+
+# To demonstrate the issue, we will set a counterfactual scenario
+# with a fairly large shock to the parameters, then attempt to solve
+# all four models. This is the smallest shock I could find that
+# causes the issue to appear.
 
 params = ModelParameters(
     elas_substitution = .2, 
@@ -59,6 +64,8 @@ solve!(mpsge)
 # The issue appears to be related to the use of subexpressions in PATHSolver.
 # Both the NLP and MCP models without subexpressions solve fine, while
 # both models with subexpressions fail to solve.
+
+# ## Temporary Solution
 
 # One way to solve this is to slowly approach the counterfactual by solving 
 # the model multiple times with smaller shocks. This is known as "parameter

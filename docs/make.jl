@@ -6,14 +6,14 @@ DocMeta.setdocmeta!(NLP_to_MPSGE_Example, :DocTestSetup, :(using NLP_to_MPSGE_Ex
 
 
 const _PAGES = [
-    "Introduction" => ["index.md"],
+    "Introduction" => ["problem_description.md", "convert.md", "compare.md"],
     "Issues" => ["problems.md"],
     "API Reference" => ["docs.md"],
 ]
 
 
 literate_files = Dict(
-    "index" => ( 
+    "compare" => ( 
         input = "../main.jl",
         output = "src/"
     ),
