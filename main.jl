@@ -14,12 +14,21 @@ using JuMP, MPSGE, DataFrames
 data = ModelData()
 
 # Initialize the models
-nlp = NLP_model(data)
-mpsge = MPSGE_model(data)
+nlp = NLP_model(data);
+mpsge = MPSGE_model(data);
 
-# Verify the model by solving the baseline scenario
+# Verify the models by solving the baseline scenario. For the NLP model, you are
+# looking for `Optimal Solution Found`.
 optimize!(nlp)
+
+# For the MPSGE model, you are looking for `Solver Status: LOCALL_SOLVED`, or a 
+# `Postsolved Residual` that is very small (ideally, 0).
 solve!(mpsge; cumulative_iteration_limit=0)
+
+# At this point I'll set both models to silent mode to avoid cluttering the output
+set_silent(nlp)
+set_silent(mpsge)
+
 
 # ## Comparing Solutions
 
@@ -75,11 +84,11 @@ production(mpsge[:X])
 
 # Or, in the code: 
 #
-#    @production(MP, X, [t=omega,s=0], begin
+#   ```@production(MP, X, [t=omega,s=0], begin
 #        @output(PFX, E0*PWE, t, reference_price = 1/PWE, taxes = [Tax(Y, -TE)]) # Negative tax for export subsidy
 #        @output(PDD, DS0, t)
 #        @input(PX, X0, s)
-#    end)
+#    end)```
 #
 # `PX` is the commodity associated with `X0`, so to get `X` we compute the compensated
 # demand for `X` with respect to `PX`, and scale it by the activity level of `X`:
@@ -87,17 +96,18 @@ production(mpsge[:X])
 X = value(compensated_demand(mpsge[:X], mpsge[:PX])*mpsge[:X])
 Q = value(compensated_demand(mpsge[:Q], mpsge[:PQ])*mpsge[:Q])
 
+println("X = $X\nQ = $Q")
+
 # The `-` on `Q` is signifying that the value comes from an output. 
 
 
 # Next up, parameters. MPSGE does not report the parameter values. We can display these using:
 
-parameters(mpsge)
 value.(parameters(mpsge))
 
-# The above displays two vectors. It would be a good exercise to put these in a 
-# DataFrame, and `vcat` it to the previous mpsge dataframe.
-
+# The above displays only values. It would be a good exercise to put these in a 
+# DataFrame with the parameter names, and `vcat` it to the previous mpsge dataframe.
+    
 # Next, the four quantities, `DD`, `DS`, `E`, and `M`. The idea is identical to 
 # `X` and `Q`. The exception is for `E` and `M`, which require scaling by the world prices.
 
@@ -105,6 +115,8 @@ DD = value(compensated_demand(mpsge[:Q], mpsge[:PDD])*mpsge[:Q])
 DS = value(compensated_demand(mpsge[:X], mpsge[:PDD])*mpsge[:X])
 E = value(compensated_demand(mpsge[:X], mpsge[:PFX])*mpsge[:X]/mpsge[:PWE])
 M = value(compensated_demand(mpsge[:Q], mpsge[:PFX])*mpsge[:Q]/mpsge[:PWM])
+
+println("DD = $DD\nDS = $DS\nE = $E\nM = $M")
 
 # The `GR` variable in the NLP model corresponds to the tax revenues in MPSGE. 
 # There should be a better function for this, but for now we can compute it as:
@@ -114,7 +126,8 @@ value(MPSGE.tax_revenue(mpsge[:Q], mpsge[:Y]; virtual = true))
 
 # Finally, the three prices. I am first going to demonstrate a method to extract
 # the price directly from the MPSGE model, then show how to compute them manually.
-# This should be a function in MPSGE, I will work on it for a future release.
+# This should be a function in MPSGE, I will work on it for a future release. However,
+# notice that we can extract the expression, not just the value.
 
 P = production(mpsge[:Q])
 O = input(P)
@@ -122,11 +135,15 @@ N = O.children[2]
 CF = cost_function(N)
 PDT = value(CF)
 
+println("PDT = $PDT\nCF = $CF")
+
 # Manually:
 
 PDT = value(mpsge[:PDD]*(1 + mpsge[:TD]))
 PMD = value(mpsge[:PFX]*(1 + mpsge[:TM])*mpsge[:PWM])
 PED = value(mpsge[:PFX]*(1 + mpsge[:TE])*mpsge[:PWE])
+
+println("PDT = $PDT\nPMD = $PMD\nPED = $PED")
 
 
 
@@ -153,10 +170,6 @@ shocks = [
     ModelParameters(price_world_import = 1.1, elas_substitution = 15,  elas_transformation = .2, ),
     ModelParameters(price_world_import = 1.1, elas_substitution = .2,  elas_transformation = 15, ),
 ];
-
-# We will also set the models to silent mode to avoid cluttering the output
-set_silent(nlp)
-set_silent(mpsge)
 
 # To run the shocks and collect the results, we do two steps:
 # 
@@ -196,7 +209,6 @@ round.(nlp_results .- mpsge_results, digits=6)
 
 # What do the columns in the report mean? Check the doc string for `report`. You 
 # can do this either by entering the help mode in the REPL, just type `?` in the REPL
-# to switch to help mode and type `report`, or by using the `@doc` macro:
-
-@doc report
+# to switch to help mode and type `report`, or using the `@doc report`. Here is a 
+# link to the ['report'](@ref) documentation.
 
