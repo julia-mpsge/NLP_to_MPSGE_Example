@@ -1,7 +1,11 @@
+# # Comparing an NLP and MPSGE Implementation of the Same Model
+
+# This document will compare the solutions from [`NLP_model`](@ref) and [`MPSGE_model`](@ref).
+# They both describe the same economic model, but one is implemented in the 
+# traditional NLP framework and the other in MPSGE.
+
 using NLP_to_MPSGE_Example
 using JuMP, MPSGE, DataFrames
-
-
 
 ############################
 ## Part 1: Initialization ##
@@ -170,6 +174,9 @@ set_silent(mpsge)
 
 nlp_results = DataFrame();
 mpsge_results = DataFrame();
+
+# Test break up
+
 for shock in shocks
     set_parameter_values(nlp, shock)
     set_parameter_values(mpsge, shock)
@@ -199,6 +206,4 @@ round.(nlp_results .- mpsge_results, digits=6)
 # to switch to help mode and type `report`, or by using the `@doc` macro:
 
 @doc report
-
-## Part 4: Issues
 
