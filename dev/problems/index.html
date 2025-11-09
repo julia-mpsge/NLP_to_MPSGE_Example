@@ -45,8 +45,8 @@ $Production: X
 
 $Demand: Y
     D: PQ    Q: 100.0
-    E: PFX    Q: BBAR
     E: PX    Q: 100.0
+    E: PFX    Q: BBAR
 
 </code></pre><p>Notice that we have two versions of the MCP model, one with subexpressions and one without. This is going to demonstrate an issue with the PATHSolver when subexpressions are used.</p><h2 id="Demonstration-of-the-Issue"><a class="docs-heading-anchor" href="#Demonstration-of-the-Issue">Demonstration of the Issue</a><a id="Demonstration-of-the-Issue-1"></a><a class="docs-heading-anchor-permalink" href="#Demonstration-of-the-Issue" title="Permalink"></a></h2><p>To demonstrate the issue, we will set a counterfactual scenario with a fairly large shock to the parameters, then attempt to solve all four models. This is the smallest shock I could find that causes the issue to appear.</p><pre><code class="language-julia hljs">params = ModelParameters(
     elas_substitution = .2,
@@ -84,13 +84,13 @@ iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
    1  1.1080262e+02 1.74e+00 8.94e-01  -1.0 3.16e+01    -  8.38e-01 1.00e+00f  1
    2  1.1013233e+02 1.05e-01 3.46e-01  -1.0 1.89e+00    -  9.74e-01 1.00e+00h  1
    3  1.1009540e+02 2.24e-04 3.54e-03  -1.7 3.69e-02    -  1.00e+00 1.00e+00h  1
-   4  1.1009540e+02 1.19e-09 3.81e-14  -3.8 4.12e-06    -  1.00e+00 1.00e+00h  1
+   4  1.1009540e+02 1.19e-09 3.01e-14  -3.8 4.12e-06    -  1.00e+00 1.00e+00h  1
 
 Number of Iterations....: 4
 
                                    (scaled)                 (unscaled)
 Objective...............:  -1.1009539658140858e+02    1.1009539658140858e+02
-Dual infeasibility......:   3.8115469908863689e-14    3.8115469908863689e-14
+Dual infeasibility......:   3.0113395365171019e-14    3.0113395365171019e-14
 Constraint violation....:   3.1753965383056021e-10    1.1907737018646003e-09
 Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
 Complementarity.........:   0.0000000000000000e+00    0.0000000000000000e+00
@@ -161,8 +161,8 @@ Crash Iterations. . . . 1
 Gradient Steps. . . . . 0
 Function Evaluations. . 39
 Gradient Evaluations. . 35
-Basis Time. . . . . . . 0.000070
-Total Time. . . . . . . 0.006465
+Basis Time. . . . . . . 0.000073
+Total Time. . . . . . . 0.006574
 Residual. . . . . . . . 1.934192e-13
 Postsolved residual: 1.9342e-13</code></pre><p>However, the MCP model with subexpressions fails to solve.</p><pre><code class="language-julia hljs">optimize!(mcp_sub)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Path 5.0.03 (Fri Jun 26 09:54:13 2020)
 Written by Todd Munson, Steven Dirkse, Youngdae Kim, and Michael Ferris
@@ -477,10 +477,10 @@ Crash Iterations. . . . 0
 Gradient Steps. . . . . 12
 Function Evaluations. . 3267
 Gradient Evaluations. . 254
-Basis Time. . . . . . . 0.000802
-Total Time. . . . . . . 0.021219
+Basis Time. . . . . . . 0.000796
+Total Time. . . . . . . 0.023295
 Residual. . . . . . . . 3.971304e+00
-Postsolved residual: 3.9713e+00</code></pre><p>This MPSGE model uses subexpressions, so it also fails to solve.</p><pre><code class="language-julia hljs">solve!(mpsge)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Reading options file /tmp/jl_qw6ZRa
+Postsolved residual: 3.9713e+00</code></pre><p>This MPSGE model uses subexpressions, so it also fails to solve.</p><pre><code class="language-julia hljs">solve!(mpsge)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Reading options file /tmp/jl_R1OlSS
  &gt; cumulative_iteration_limit 10000
 Read of options file complete.
 
@@ -686,8 +686,8 @@ Crash Iterations. . . . 11
 Gradient Steps. . . . . 24
 Function Evaluations. . 1535
 Gradient Evaluations. . 141
-Basis Time. . . . . . . 0.000749
-Total Time. . . . . . . 0.070719
+Basis Time. . . . . . . 0.000791
+Total Time. . . . . . . 0.036288
 Residual. . . . . . . . 1.060652e+00
 Postsolved residual: 1.0607e+00
 
@@ -725,4 +725,4 @@ Omega=11.0: Solved = true
 Omega=12.0: Solved = true
 Omega=13.0: Solved = true
 Omega=14.0: Solved = true
-Omega=15.0: Solved = true</code></pre><p>A couple of notes. First, the <code>all_variables</code> function is defined in MPSGE, but it does not grab all the variables, just the ones that are explicitly defined. By using first extracting the JuMP model using <code>jump_model</code>, we can use <code>all_variables</code> from JuMP, which grabs all variables including subexpressions. I plan to add a keyword to <code>all_variables</code> in MPSGE to allow this behavior directly in the future.</p><p>Second, this approach may not always work. It depends on the model and the size of the shock. However, it is a useful technique to have in your toolbox when dealing with difficult-to-solve models.</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../compare/">« Comparing Models</a><a class="docs-footer-nextpage" href="../docs/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Friday 7 November 2025 18:55">Friday 7 November 2025</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+Omega=15.0: Solved = true</code></pre><p>A couple of notes. First, the <code>all_variables</code> function is defined in MPSGE, but it does not grab all the variables, just the ones that are explicitly defined. By using first extracting the JuMP model using <code>jump_model</code>, we can use <code>all_variables</code> from JuMP, which grabs all variables including subexpressions. I plan to add a keyword to <code>all_variables</code> in MPSGE to allow this behavior directly in the future.</p><p>Second, this approach may not always work. It depends on the model and the size of the shock. However, it is a useful technique to have in your toolbox when dealing with difficult-to-solve models.</p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../compare/">« Comparing Models</a><a class="docs-footer-nextpage" href="../docs/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Sunday 9 November 2025 21:31">Sunday 9 November 2025</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
